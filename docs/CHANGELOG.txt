@@ -1,0 +1,9 @@
+ Module Flexi Slider
+--------------------------------
+ Reminder: You own a single production license. It would only be installed on one online store (or multistore)
+
+####################################
+#   v 1.0 - (2014-10-18)
+####################################
+
+	Init release
