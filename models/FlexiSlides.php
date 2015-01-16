@@ -67,10 +67,24 @@ class FlexiSlides extends ObjectModel {
     }
 
     public function update($null_values = false) {
+        $this->handle_image();
         $options = $this->transform_options();
         if ($options != false)
             $this->options = $options;
+
         parent::update($null_values);
+
+        //set settings for all sldies
+        if (Tools::getValue('setall_on') && Tools::getValue(self::$definition['primary']) == $this->id) {
+            $par = self::$parent_definition['primary'];
+            $all = self::getAll(array($par => $this->$par));
+            foreach ($all as $a)
+                if ($a[self::$definition['primary']] != $this->id) {
+                    $tmpobj = new FlexiSlides($a[self::$definition['primary']]);
+                    $tmpobj->options = $tmpobj->transform_caption_options($tmpobj->options);
+                    $tmpobj->save();
+                }
+        }
     }
 
     public function add($autodate = true, $null_values = false) {
@@ -78,18 +92,36 @@ class FlexiSlides extends ObjectModel {
         $last_position = self::getLastPosition($this->$par);
         $this->position = $last_position + 1;
         $this->handle_image();
-        
         $options = $this->transform_options();
         if ($options != false)
             $this->options = $options;
         parent::add($autodate, $null_values);
+        
+         //set settings for all sldies
+        if (Tools::getValue('setall_on')) {
+            $par = self::$parent_definition['primary'];
+            $all = self::getAll(array($par => $this->$par));
+            foreach ($all as $a)
+                if ($a[self::$definition['primary']] != $this->id) {
+                    $tmpobj = new FlexiSlides($a[self::$definition['primary']]);
+                    $tmpobj->options = $tmpobj->transform_caption_options($tmpobj->options);
+                    $tmpobj->save();
+                }
+        }
     }
 
     public function delete() {
         parent::delete();
         $par = self::$parent_definition['primary'];
         $this->cleanPositions($this->$par);
-        @unlink(self::get_image_path($this->$par) . $this->image);
+        $all = self::getAll(array($par => $this->$par));
+        $delete = true;
+        foreach ($all as $a)
+            if ($a['image'] == $this->image)
+                $delete = false;
+
+        if ($delete)
+            @unlink(self::get_image_path($this->$par) . $this->image);
     }
 
     public function updatePosition($way, $position) {
@@ -183,9 +215,34 @@ class FlexiSlides extends ObjectModel {
         return Tools::jsonEncode($parms);
     }
 
+    private function transform_caption_options($options) {
+        if (!Tools::getIsset('submitUpdate' . self::$definition['table']) && !Tools::getIsset('submitAdd' . self::$definition['table']))
+            return false;
+        $parms = Tools::jsonDecode($options, true);
+        foreach (self::get_caption_fields() as $option)
+            $parms[$option] = Tools::getValue($option);
+        return Tools::jsonEncode($parms);
+    }
+
     public static function get_option_fields() {
-        return array('captionPadding','backgroundColor','imagePosition', 'size','displayCaption','captionPosition','captionBackgroundColor','captionFontColor','captionOpacity');
+        return array('captionPadding', 'backgroundColor', 'imagePosition', 'size', 'displayCaption', 'captionPosition', 'captionBackgroundColor', 'captionFontColor', 'captionOpacity');
         //return array('position', 'size', 'width', 'backgroundColor', 'backgroundOpacity', 'borderColor', 'borderWidth', 'borderStyle', 'color');
+    }
+
+    public static function get_caption_fields() {
+        return array('captionPadding', 'captionPosition', 'captionBackgroundColor', 'captionFontColor', 'captionOpacity');
+        //return array('position', 'size', 'width', 'backgroundColor', 'backgroundOpacity', 'borderColor', 'borderWidth', 'borderStyle', 'color');
+    }
+
+    public static function duplicate() {
+        $context = Context::getContext();
+        $slide = new FlexiSlides(Tools::getValue(self::$definition['primary']));
+        if (!is_object($slide))
+            return;
+        unset($slide->id);
+        $slide->save();
+        $par = FlexiSliders::$definition['primary'];
+        Tools::redirectAdmin($context->link->getAdminLink('AdminFlexiSlides') . '&' . $par . '=' . $slide->$par);
     }
 
 }

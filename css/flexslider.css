@@ -1,4 +1,4 @@
-.flexislider{position:relative;}
+.flexislider{position:relative; margin:0 0 14px 0;}
 .flexislider ul{overflow:hidden;}
 .flexislider ul, .flexislider ul li{margin:0;padding:0;list-style:none;height:100%;width:100%;}
 .flexislider ul li .case{background-repeat:no-repeat;height:100%;width:100%;}
@@ -19,3 +19,5 @@
 .flexislider-controls a:after{display:block;width:48px;height:48px;color:white;text-indent:0;text-align:center;font-size:21px;font-family:"FontAwesome";position:absolute;top:0;left:0;z-index:2;padding:16px 0 0 0;}
 .flexislider-controls a:hover:before{background:#333333;opacity:0.83;}
 .flexislider-controls a.disabled{display:none;}
+
+.ie8  .flexislider-controls a:before {  background: #333333; }

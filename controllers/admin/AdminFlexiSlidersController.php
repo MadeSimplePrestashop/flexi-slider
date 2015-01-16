@@ -13,7 +13,7 @@ require_once(_PS_MODULE_DIR_ . 'flexislider/models/FlexiSliders.php');
 class AdminFlexiSlidersController extends ModuleAdminController {
 
     protected $position_identifier = 'id_flexislider';
-    
+
     public function __construct() {
 
         $this->bootstrap = true;
@@ -25,7 +25,7 @@ class AdminFlexiSlidersController extends ModuleAdminController {
         $this->className = 'FlexiSliders';
 
         Shop::addTableAssociation($this->table, array('type' => 'shop'));
-        
+
         $this->addRowAction('view');
         $this->addRowAction('edit');
         $this->addRowAction('duplicate');
@@ -52,7 +52,7 @@ class AdminFlexiSlidersController extends ModuleAdminController {
             Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminFlexiSliders'));
         elseif (Tools::isSubmit('submitAdd' . $this->table))
             if (Tools::getIsset('submitPreview'))
-                Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminFlexiSliders') . '&' . FlexiSliders::$definition['primary'] . '=' . $this->object->id . '#preview');
+                Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminFlexiSlides') . '&' . FlexiSliders::$definition['primary'] . '=' . $this->object->id . '#preview');
             elseif (Tools::getIsset('submitStay'))
                 Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminFlexiSliders') . '&' . FlexiSliders::$definition['primary'] . '=' . $this->object->id . '&update' . $this->table);
             else
@@ -111,7 +111,7 @@ class AdminFlexiSlidersController extends ModuleAdminController {
                     'name' => 'alias',
                     'required' => true
                 ),
-                   array(
+                array(
                     'tab' => 'options',
                     'type' => 'switch',
                     'label' => $this->l('Active'),
@@ -133,10 +133,20 @@ class AdminFlexiSlidersController extends ModuleAdminController {
                 array(
                     'tab' => 'options',
                     'type' => 'text',
+                    'label' => $this->l('Width'),
+                    'desc' => $this->l('You can use px, %, em or whatever you want.'),
+                    'name' => 'width',
+                    'class' => 'fixed-width-sm',
+                    'default_value' => isset($options->width) ? $options->width : '100%'
+                ),
+                array(
+                    'tab' => 'options',
+                    'type' => 'text',
                     'label' => $this->l('Height'),
                     'name' => 'height',
                     'suffix' => 'px',
                     'class' => 'fixed-width-sm',
+                    'desc' => $this->l('Required'),
                     'default_value' => isset($options->height) ? $options->height : 500
                 ),
                 array(
@@ -147,7 +157,7 @@ class AdminFlexiSlidersController extends ModuleAdminController {
                     'name' => 'timer',
                     'suffix' => 'ms',
                     'class' => 'fixed-width-sm',
-                    'default_value' => isset($options->timer) ? $options->timer : 5000
+                    'default_value' => isset($options->timer) ? $options->timer : 7000
                 ),
                 array(
                     'tab' => 'options',
@@ -197,7 +207,7 @@ class AdminFlexiSlidersController extends ModuleAdminController {
                 array(
                     'tab' => 'controls',
                     'type' => 'switch',
-                    'label' => $this->l('Left/Right arrow support'),
+                    'label' => $this->l('Left/Right key support'),
                     'name' => 'keys',
                     'values' => array(
                         array(
@@ -251,25 +261,25 @@ class AdminFlexiSlidersController extends ModuleAdminController {
                     ),
                     'default_value' => isset($options->touch) ? $options->touch : true
                 ),
-         /*       array(
-                    'tab' => 'controls',
-                    'type' => 'switch',
-                    'label' => $this->l('Pagination'),
-                    'name' => 'pagination',
-                    'values' => array(
-                        array(
-                            'id' => 'active_on',
-                            'value' => 1,
-                            'label' => $this->l('Enabled')
-                        ),
-                        array(
-                            'id' => 'active_off',
-                            'value' => 0,
-                            'label' => $this->l('Disabled')
-                        )
-                    ),
-                    'default_value' => isset($options->pagination) ? $options->pagination : 1
-                ),*/
+                /*       array(
+                  'tab' => 'controls',
+                  'type' => 'switch',
+                  'label' => $this->l('Pagination'),
+                  'name' => 'pagination',
+                  'values' => array(
+                  array(
+                  'id' => 'active_on',
+                  'value' => 1,
+                  'label' => $this->l('Enabled')
+                  ),
+                  array(
+                  'id' => 'active_off',
+                  'value' => 0,
+                  'label' => $this->l('Disabled')
+                  )
+                  ),
+                  'default_value' => isset($options->pagination) ? $options->pagination : 1
+                  ), */
                 array(
                     'tab' => 'controls',
                     'type' => 'switch',
@@ -382,7 +392,6 @@ class AdminFlexiSlidersController extends ModuleAdminController {
                             'value' => 'crawler',
                             'id' => 'crawler',
                             'label' => $this->l('Crawler')
-                            
                         ),
                     )
                 ),
@@ -573,12 +582,13 @@ class AdminFlexiSlidersController extends ModuleAdminController {
             );
         }
 
-
-        $this->page_header_toolbar_btn['new'] = array(
-            'href' => $this->context->link->getAdminLink('AdminFlexiSlides') . '&' . FlexiSliders::$definition['primary'] . '=' . $obj->$par,
-            'desc' => $this->l('Go to slides'),
-            'icon' => 'process-icon-configure'
-        );
+        if ($obj->id) {
+            $this->page_header_toolbar_btn['new'] = array(
+                'href' => $this->context->link->getAdminLink('AdminFlexiSlides') . '&' . FlexiSliders::$definition['primary'] . '=' . $obj->$par,
+                'desc' => $this->l('Go to slides'),
+                'icon' => 'process-icon-configure'
+            );
+        }
         $this->page_header_toolbar_btn['edit'] = array(
             'href' => self::$currentIndex . '&token=' . $this->token,
             'desc' => $this->l('Return to sliders list'),
@@ -657,6 +667,7 @@ class AdminFlexiSlidersController extends ModuleAdminController {
             'desc' => $this->l('Add new slider'),
             'icon' => 'process-icon-new'
         );
+        $this->content.= "<style>.bootstrap .pull-right > .dropdown-menu { height: auto}</style>";
         return parent::renderList();
     }
 

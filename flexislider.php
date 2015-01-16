@@ -26,7 +26,7 @@ class flexislider extends Module {
         $this->version = '1.0';
         $this->author = 'kuzmany.biz/prestashop';
         $this->need_instance = 0;
-        $this->module_key = '120f5f4af81ccec25515a5eb91a8d263';
+        $this->module_key = 'cf572794bcfde7a20f5146cd06959ad9';
 
         parent::__construct();
 
@@ -73,7 +73,7 @@ class flexislider extends Module {
         include_once(dirname(__FILE__) . '/init/uninstall_sql.php');
 
         $this->uninstallAdminTab('AdminFlexiSliders');
-        $this->uninstallAdminTab('AdminFlexiSliders');
+        $this->uninstallAdminTab('AdminFlexiSlides');
 
         return true;
     }

@@ -74,7 +74,9 @@ class FlexiSliders extends ObjectModel {
     }
 
     public function add($autodate = true, $null_values = false) {
-
+        
+        $this->alias = Tools::strtolower(str_replace(' ', '', Tools::replaceAccentedChars($this->alias)));
+        
         $last_position = self::getLastPosition();
         $this->position = $last_position + 1;
 
@@ -308,10 +310,10 @@ class FlexiSliders extends ObjectModel {
     public function updatePosition($way, $position) {
         $sql = 'SELECT cp.`' . self::$definition['primary'] . '`, cp.`position` 
 			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '` cp 
+                            WHERE cp.' . self::$definition['primary'] . ' = ' . (int) $this->id . ' 
 			ORDER BY cp.`position` ASC';
         if (!$res = Db::getInstance()->executeS($sql))
             return false;
-
         $moved_field = $res[0];
 
         if (!isset($moved_field) || !isset($position))
@@ -319,7 +321,6 @@ class FlexiSliders extends ObjectModel {
 
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-       
         if (Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . self::$definition['table'] . '`
 				SET `position`= `position` ' . ($way ? '- 1 ' : '+ 1 ') . '
 				 WHERE `position`
@@ -366,7 +367,7 @@ class FlexiSliders extends ObjectModel {
 
     public static function get_option_fields() {
         return array('categories', 'cms', 'hooks', 'effect', 'keys', 'buttons', 'touch', 'pagination', 'startOnMouseOver', 'stopOnMouseOver', 'view', 'move',
-            'slicesx', 'slicesy', 'mode', 'direction', 'stripes', 'orientation', 'easing', 'speed', 'timer', 'height');
+            'slicesx', 'slicesy', 'mode', 'direction', 'stripes', 'orientation', 'easing', 'speed', 'timer', 'height','width');
     }
 
 }

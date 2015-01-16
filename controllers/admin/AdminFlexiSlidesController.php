@@ -26,6 +26,7 @@ class AdminFlexiSlidesController extends ModuleAdminController {
         $this->className = 'FlexiSlides';
 
         $this->addRowAction('edit');
+        $this->addRowAction('duplicate');
         $this->addRowAction('delete');
 
         $this->bulk_actions = array(
@@ -44,6 +45,8 @@ class AdminFlexiSlidesController extends ModuleAdminController {
     }
 
     public function initContent() {
+        if (Tools::getIsset('duplicate' . $this->table))
+            FlexiSlides::duplicate();
         parent::initContent();
     }
 
@@ -112,7 +115,7 @@ class AdminFlexiSlidesController extends ModuleAdminController {
                     'type' => 'color',
                     'label' => $this->l('Background color'),
                     'name' => 'backgroundColor',
-                    'default_value' => isset($options->backgroundColor) ? $options->backgroundColor : '#000000',
+                    'default_value' => isset($options->backgroundColor) ? $options->backgroundColor : '',
                 ),
                 array(
                     'tab' => 'options',
@@ -152,12 +155,20 @@ class AdminFlexiSlidesController extends ModuleAdminController {
                                 'name' => $this->l('center center')
                             ),
                             array(
+                                'id' => 'background-position: left center;',
+                                'name' => $this->l('left center')
+                            ),
+                            array(
                                 'id' => 'background-position: left top;',
                                 'name' => $this->l('left top')
                             ),
                             array(
                                 'id' => 'background-position: left bottom;',
                                 'name' => $this->l('left bottom')
+                            ),
+                            array(
+                                'id' => 'background-position: right center;',
+                                'name' => $this->l('right center')
                             ),
                             array(
                                 'id' => 'background-position: right top;',
@@ -328,8 +339,20 @@ class AdminFlexiSlidesController extends ModuleAdminController {
                     'label' => $this->l('Padding'),
                     'name' => 'captionPadding',
                     'class' => 'fixed-width-lg',
-                    'desc'=> $this->l('top right bottom left'),
+                    'desc' => $this->l('top right bottom left'),
                     'default_value' => isset($options->captionPadding) ? $options->captionPadding : '0px 0px 0px 0px',
+                ),
+                array(
+                    'tab' => 'caption',
+                    'type' => 'checkbox',
+                    'name' => 'setall',
+                    'values' => array(
+                        'query' => array(
+                            array('id' => 'on', 'name' => $this->l('Set this caption settings for all slides'), 'val' => '1'),
+                        ),
+                        'id' => 'id',
+                        'name' => 'name'
+                    )
                 ),
             ),
             'submit' => array(
@@ -409,11 +432,11 @@ class AdminFlexiSlidesController extends ModuleAdminController {
             'icon' => 'process-icon-edit',
             'desc' => $this->l('Edit slider'),
         );
-        $this->page_header_toolbar_btn['edit'] = array(
-            'href' => 'javascript:$("#previewslider").toggle(); flexislider.reloadSlider();',
-            'icon' => 'process-icon-preview',
-            'desc' => $this->l('Preview toggle'),
-        );
+        /*  $this->page_header_toolbar_btn['edit'] = array(
+          'href' => 'javascript:$("#previewslider").toggle(); flexislider.reloadSlider();',
+          'icon' => 'process-icon-preview',
+          'desc' => $this->l('Preview toggle'),
+          ); */
         $this->page_header_toolbar_btn['save'] = array(
             'href' => $this->context->link->getAdminLink('AdminFlexiSliders', true),
             'icon' => 'process-icon-back',
@@ -426,15 +449,17 @@ class AdminFlexiSlidesController extends ModuleAdminController {
         );
 
         //TODO $this->content .= '<div id="previewslider" style="display:none">' . FlexiSliders::get_slider(array('id' => Tools::getValue(self::$parent_definition['primary']))) . '</div>';
-      /*  $this->content.= '<script>
-         $(document).ready(function(){
-         if(location.hash == "#preview")
-            $("#previewslider").show(); flexislider.reloadSlider();
-        })
-                </script>';*/
+        /*  $this->content.= '<script>
+          $(document).ready(function(){
+          if(location.hash == "#preview")
+          $("#previewslider").show(); flexislider.reloadSlider();
+          })
+          </script>'; */
 // set new title
         $slider = new FlexiSliders(Tools::getValue(self::$parent_definition ['primary']));
-        $this->tpl_list_vars['title'] = $this->l('Slides of ') . $slider->alias;
+        $this->tpl_list_vars['title'] = '<a href="' . $this->context->link->getAdminLink('AdminFlexiSliders', true) . '">' . $this->l('All sliders') . '</a> &nbsp;&gt;&nbsp; ' .
+                '<a href="' . $this->context->link->getAdminLink('AdminFlexiSliders', true) . '&update' . self::$parent_definition['table'] . '&' . self::$parent_definition['primary'] . '=' . Tools::getValue(self::$parent_definition['primary']) . '">' . $slider->alias . '</a> &nbsp;&gt;&nbsp;	 ' .
+                $this->l('Manage slides');
         return parent::renderList();
     }
 

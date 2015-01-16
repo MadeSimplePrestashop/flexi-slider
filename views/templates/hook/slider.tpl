@@ -36,26 +36,27 @@
                 })
     </script>
     {if $slides}
-        <div class="flexislider {$slider->alias|escape:'html':'UTF-8'}"> 
-            <ul class="flexislider{$flexicounter|intval}" style=" height:{$slider->options->height|default}px">
-                {foreach from=$slides item='slide' name='slider'}
-                    <li>
-                        <div class="case" style="{$slide.options->size|escape:'UTF-8'}{$slide.options->imagePosition|escape:'UTF-8'}background-image: url('{$link->getMediaLink($slide.image_helper.dir|cat:$slide.image)|escape:'htmlall':'UTF-8'}'); {if $slide.options->backgroundColor}background-color:{$slide.options->backgroundColor|escape:'UTF-8'}{/if}">
-                            {if $slide.url}<a href="{$slide.url|escape:'html':'UTF-8'}" {if $slide.target}target="{$slide.target|escape:'html':'UTF-8'}"{/if}>{/if}
-                                {if $slide.caption}<div style="{$slide.options->displayCaption|escape:'UTF-8'}{$slide.options->captionPosition|escape:'UTF-8'} color:{$slide.options->captionFontColor|escape:'UTF-8'};" class="caption">
-                                        <div  class="blayer" style="opacity:{$slide.options->captionOpacity|escape:'UTF-8'};{if $slide.options->captionBackgroundColor|default}background-color:{$slide.options->captionBackgroundColor|escape:'UTF-8'};{/if}"></div>
-                                        <div style="{if $slide.options->captionPadding}padding:{$slide.options->captionPadding|escape:'UTF-8'};{/if}" class="caption-case">{$slide.caption|escape:'UTF-8'}</div>
-                                    </div>{/if}
-                                    {if $slide.url}</a>{/if}
-                            </div>
-                        </li>
-                        {/foreach}
-                        </ul>
-                        {if $slider->options->buttons|default}
-                            <div class="flexislider-controls">
-                                <a href="" class="flexislider-prev">{l s="Prev" mod="flexislider"}</a>
-                                <a href="" class="flexislider-next">{l s="Next" mod="flexislider"}</a>
-                            </div>
+                        <div style="max-width:{$slider->options->width|default}" class="flexislider {$slider->alias|escape:'html':'UTF-8'} clearfix"> 
+                                    <ul class="flexislider{$flexicounter|intval}" style=" height:{$slider->options->height|default}px">
+                                        {foreach from=$slides item='slide' name='slider'}
+                        <li>
+                            <div class="case" style="{$slide.options->size|escape:'UTF-8'}{$slide.options->imagePosition|escape:'UTF-8'}background-image: url('{$link->getMediaLink($slide.image_helper.dir|cat:$slide.image)|escape:'htmlall':'UTF-8'}'); {if $slide.options->backgroundColor}background-color:{$slide.options->backgroundColor|escape:'UTF-8'}{/if}">
+                                {if $slide.url}<a href="{$slide.url|escape:'html':'UTF-8'}" {if $slide.target}target="{$slide.target|escape:'html':'UTF-8'}"{/if}>{/if}
+                                    {if $slide.caption}<div style="{$slide.options->displayCaption|escape:'UTF-8'}{$slide.options->captionPosition|escape:'UTF-8'} color:{$slide.options->captionFontColor|escape:'UTF-8'};" class="caption">
+                                            <div  class="blayer" style="opacity:{$slide.options->captionOpacity|escape:'UTF-8'};{if $slide.options->captionBackgroundColor|default}background-color:{$slide.options->captionBackgroundColor|escape:'UTF-8'};{/if}"></div>
+                                            <div style="{if $slide.options->captionPadding}padding:{$slide.options->captionPadding|escape:'UTF-8'};{/if}" class="caption-case">{$slide.caption|escape:'UTF-8'}</div>
+                                        </div>{/if}
+                                        {if $slide.url}</a>{/if}
+                                </div>
+                            </li>
+                            {/foreach}
+                            </ul>
+                            {if $slider->options->buttons|default}
+                                <div class="flexislider-controls">
+                                    <a href="" class="flexislider-prev">{l s="Prev" mod="flexislider"}</a>
+                                    <a href="" class="flexislider-next">{l s="Next" mod="flexislider"}</a>
+                                </div>
+                            {/if}
+                        </div>
+                    {/if}
                         {/if}
-                        {/if}
-{/if}
