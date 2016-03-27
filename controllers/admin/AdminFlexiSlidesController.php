@@ -71,6 +71,8 @@ class AdminFlexiSlidesController extends ModuleAdminController
             Tools::redirectAdmin($this->context->link->getAdminLink('AdminFlexiSlides') . '&' . self::$parent_definition['primary'] . '=' . $obj->$par);
         elseif (Tools::getIsset('delete' . $this->table))
             Tools::redirectAdmin($this->context->link->getAdminLink('AdminFlexiSlides') . '&' . self::$parent_definition['primary'] . '=' . $obj->$par);
+        elseif (Tools::getIsset('submitStay'))
+            Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminFlexiSlides') . '&' . FlexiSlides::$definition['primary'] . '=' . $this->object->id . '&update' . $this->table);
         elseif (Tools::isSubmit('submitAdd' . $this->table))
             Tools::redirectAdmin($this->context->link->getAdminLink('AdminFlexiSlides') . '&' . self::$parent_definition['primary'] . '=' . Tools::getValue(self::$parent_definition['primary']));
     }
@@ -384,6 +386,25 @@ class AdminFlexiSlidesController extends ModuleAdminController
             $(\'.panel-footer a\').click(function(e){e.preventDefault(); window.history.back();})
         })
                 </script>';
+
+        $this->page_header_toolbar_btn['save'] = array(
+            'href' => 'javascript:$("#' . $this->table . '_form button:submit").click();
+',
+            'desc' => $this->l('Save')
+        );
+        $this->page_header_toolbar_btn['save-and-stay'] = array(
+            'short' => 'SaveAndStay',
+            'href' => 'javascript:$("#' . $this->table . '_form").attr("action", $("#' . $this->table . '_form").attr("action")+"&submitStay");
+$("#' . $this->table . '_form button:submit").click();
+',
+            'desc' => $this->l('Save and stay'),
+            'force_desc' => true,
+        );
+        $this->page_header_toolbar_btn['delete'] = array(
+            'href' => $this->context->link->getAdminLink('AdminFlexiSlides', true) . '&' . self::$parent_definition['primary'] . '=' . ((isset($obj->id) && $obj->id) ? $obj->$par : Tools::getValue(self::$parent_definition['primary'])),
+            'icon' => 'process-icon-cancel',
+            'desc' => $this->l('Back to slides'),
+        );
 
         return parent::renderForm();
     }
