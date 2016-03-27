@@ -78,7 +78,7 @@ class flexislider extends Module
         foreach ($this->hooks as $hook)
             $this->unregisterHook($hook);
 
-        //include_once(dirname(__FILE__) . '/init/uninstall_sql.php');
+        include_once(dirname(__FILE__) . '/init/uninstall_sql.php');
 
         $this->uninstallAdminTab('AdminFlexiSliders');
         $this->uninstallAdminTab('AdminFlexiSlides');
