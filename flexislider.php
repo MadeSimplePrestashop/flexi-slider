@@ -44,21 +44,28 @@ class flexislider extends Module
 
         include_once(dirname(__FILE__) . '/init/install_sql.php');
 
-        // Sliders
+        //tabs
         $this->context->controller->getLanguages();
         $lang_array = array();
-        $id_parent = Tab::getIdFromClassName('AdminParentModules');
+        $id_parent = 0;
         foreach ($this->context->controller->_languages as $language) {
             $lang_array[(int) $language['id_lang']] = $this->displayName;
         }
-        $tab = $this->installAdminTab($lang_array, 'AdminFlexiSliders', $id_parent);
+        $tab = $this->installAdminTab($lang_array, 'AdminFexiSliders', $id_parent);
         $id_parent = $tab->id;
+        //slides
+        $lang_array = array();
+        foreach ($this->context->controller->_languages as $language) {
+            $lang_array[(int) $language['id_lang']] = 'Sliders';
+        }
+        $this->installAdminTab($lang_array, 'AdminFlexiSliders', $id_parent);
         //slides
         $lang_array = array();
         foreach ($this->context->controller->_languages as $language) {
             $lang_array[(int) $language['id_lang']] = 'Slides';
         }
         $this->installAdminTab($lang_array, 'AdminFlexiSlides', $id_parent);
+
         return true;
     }
 
@@ -71,7 +78,7 @@ class flexislider extends Module
         foreach ($this->hooks as $hook)
             $this->unregisterHook($hook);
 
-        include_once(dirname(__FILE__) . '/init/uninstall_sql.php');
+        //include_once(dirname(__FILE__) . '/init/uninstall_sql.php');
 
         $this->uninstallAdminTab('AdminFlexiSliders');
         $this->uninstallAdminTab('AdminFlexiSlides');
