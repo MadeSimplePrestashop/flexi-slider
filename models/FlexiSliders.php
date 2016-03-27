@@ -74,9 +74,9 @@ class FlexiSliders extends ObjectModel {
     }
 
     public function add($autodate = true, $null_values = false) {
-        
+
         $this->alias = Tools::strtolower(str_replace(' ', '', Tools::replaceAccentedChars($this->alias)));
-        
+
         $last_position = self::getLastPosition();
         $this->position = $last_position + 1;
 
@@ -367,7 +367,12 @@ class FlexiSliders extends ObjectModel {
 
     public static function get_option_fields() {
         return array('categories', 'cms', 'hooks', 'effect', 'keys', 'buttons', 'touch', 'pagination', 'startOnMouseOver', 'stopOnMouseOver', 'view', 'move',
-            'slicesx', 'slicesy', 'mode', 'direction', 'stripes', 'orientation', 'easing', 'speed', 'timer', 'height','width');
+            'slicesx', 'slicesy', 'mode', 'direction', 'stripes', 'orientation', 'easing', 'speed', 'timer', 'height', 'width');
+    }
+
+    public static function get_ads() {
+//        return '<p style="text-align:center">'
+//                . '</p>';
     }
 
 }

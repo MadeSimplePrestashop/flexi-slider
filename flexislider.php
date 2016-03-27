@@ -208,5 +208,4 @@ class flexislider extends Module {
     public function hookDisplayBanner($params) {
         return $this->load_hook_sliders(__FUNCTION__);
     }
-
 }

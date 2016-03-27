@@ -668,7 +668,7 @@ class AdminFlexiSlidersController extends ModuleAdminController {
             'icon' => 'process-icon-new'
         );
         $this->content.= "<style>.bootstrap .pull-right > .dropdown-menu { height: auto}</style>";
-        return parent::renderList();
+        return parent::renderList() . FlexiSliders::get_ads();
     }
 
 //render image at renderList
