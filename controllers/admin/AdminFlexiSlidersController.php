@@ -172,7 +172,7 @@ class AdminFlexiSlidersController extends ModuleAdminController
                     'name' => 'speed',
                     'suffix' => 'ms',
                     'class' => 'fixed-width-sm',
-                    'default_value' => isset($options->speed) ? $options->speed : 500
+                    'default_value' => isset($options->speed) ? $options->speed : 1000
                 ),
                 array(
                     'tab' => 'effects',
@@ -617,6 +617,15 @@ class AdminFlexiSlidersController extends ModuleAdminController
                 'name' => 'checkBoxShopAsso',
             );
         }
+
+        $this->fields_form['input'][] = array(
+            'tab' => 'display',
+            'type' => 'text',
+            'label' => $this->l('Inline css style'),
+            'desc' => $this->l('For advanced user'),
+            'name' => 'css',
+            'default_value' => isset($options->css) ? $options->css : ''
+        );
 
         $this->page_header_toolbar_btn['save'] = array(
             'href' => 'javascript:$("#' . $this->table . '_form button:submit").click();',

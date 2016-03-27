@@ -246,7 +246,7 @@ class FlexiSlides extends ObjectModel
 
     public static function get_caption_fields()
     {
-        return array('captionPadding', 'captionPosition', 'captionBackgroundColor', 'captionFontColor', 'captionOpacity');
+        return array('captionPadding', 'captionPosition', 'captionBackgroundColor', 'captionFontColor', 'captionOpacity', 'css');
         //return array('position', 'size', 'width', 'backgroundColor', 'backgroundOpacity', 'borderColor', 'borderWidth', 'borderStyle', 'color');
     }
 

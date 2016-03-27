@@ -351,11 +351,19 @@ class AdminFlexiSlidesController extends ModuleAdminController
                 ),
                 array(
                     'tab' => 'caption',
+                    'type' => 'text',
+                    'label' => $this->l('Inline css style for caption'),
+                    'desc' => $this->l('For advanced user'),
+                    'name' => 'css',
+                    'default_value' => isset($options->css) ? $options->css : ''
+                ),
+                array(
+                    'tab' => 'caption',
                     'type' => 'checkbox',
                     'name' => 'setall',
                     'values' => array(
                         'query' => array(
-                            array('id' => 'on', 'name' => $this->l('Set this caption settings for all slides in slider'), 'val' => '1'),
+                            array('id' => 'on', 'name' => $this->l('Set settings from Caption tab for all slides in select slider'), 'val' => '1'),
                         ),
                         'id' => 'id',
                         'name' => 'name'

@@ -390,7 +390,7 @@ class FlexiSliders extends ObjectModel
     {
         return array('categories', 'cms', 'hooks', 'effect', 'keys', 'buttons', 'touch', 'pagination', 'startOnMouseOver', 'stopOnMouseOver', 'view', 'move',
             'slicesx', 'slicesy', 'mode', 'direction', 'stripes', 'orientation', 'easing', 'speed', 'timer', 'height', 'width',
-            'element', 'controllers', 'products', 'position', 'insert');
+            'element', 'controllers', 'products', 'position', 'insert', 'css');
     }
 
     public static function get_ads()
