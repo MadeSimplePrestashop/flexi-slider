@@ -8,7 +8,8 @@
  * @license 	kuzmany.biz/prestashop
  * Reminder: You own a single production license. It would only be installed on one online store (or multistore)
  */
-class FlexiSliders extends ObjectModel {
+class FlexiSliders extends ObjectModel
+{
 
     public $id_flexislider;
     public $alias;
@@ -16,12 +17,14 @@ class FlexiSliders extends ObjectModel {
     public $active;
     public $options;
 
-    public function __construct($id = null, $id_lang = null, $id_shop = null) {
+    public function __construct($id = null, $id_lang = null, $id_shop = null)
+    {
         self::_init();
         parent::__construct($id, $id_lang, $id_shop);
     }
 
-    private static function _init() {
+    private static function _init()
+    {
         if (Shop::isFeatureActive())
             Shop::addTableAssociation(self::$definition['table'], array('type' => 'shop'));
     }
@@ -40,7 +43,8 @@ class FlexiSliders extends ObjectModel {
         )
     );
 
-    public static function getAll($parms = array()) {
+    public static function getAll($parms = array())
+    {
         self::_init();
         $sql = new DbQuery();
         $sql->select('*');
@@ -54,7 +58,8 @@ class FlexiSliders extends ObjectModel {
         return Db::getInstance()->executeS($sql);
     }
 
-    public function update($null_values = false) {
+    public function update($null_values = false)
+    {
         $this->alias = Tools::strtolower(str_replace(' ', '', Tools::replaceAccentedChars($this->alias)));
         $options = $this->transform_options();
         if ($options != false)
@@ -73,7 +78,8 @@ class FlexiSliders extends ObjectModel {
         }
     }
 
-    public function add($autodate = true, $null_values = false) {
+    public function add($autodate = true, $null_values = false)
+    {
 
         $this->alias = Tools::strtolower(str_replace(' ', '', Tools::replaceAccentedChars($this->alias)));
 
@@ -87,14 +93,16 @@ class FlexiSliders extends ObjectModel {
         parent::add($autodate, $null_values);
     }
 
-    public static function findIdByAlias($alias) {
+    public static function findIdByAlias($alias)
+    {
         $sql = 'SELECT ' . self::$definition['primary'] . '
 			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '`
 			WHERE `alias` = \'' . (string) $alias . '\'';
         return (Db::getInstance()->getValue($sql));
     }
 
-    public static function load_slider($id) {
+    public static function load_slider($id)
+    {
 
 // find children
         $parms = array();
@@ -109,19 +117,21 @@ class FlexiSliders extends ObjectModel {
         $slider->options = Tools::jsonDecode($slider->options);
 
         $view = array();
-        if (Dispatcher::getInstance()->getController() != 'AdminFlexiSliders') {
-            (isset($slider->options->categories) && empty($slider->options->categories) == false ? array_push($view, 'category') : '');
-            (isset($slider->options->cms) && empty($slider->options->cms) == false ? array_push($view, 'cms') : '');
-        }
+        (isset($slider->options->categories) && empty($slider->options->categories) == false ? array_push($view, 'category') : '');
+        (isset($slider->options->cms) && empty($slider->options->cms) == false ? array_push($view, 'cms') : '');
+        (isset($slider->options->controllers) && empty($slider->options->controllers) == false ? $view = array_merge(array_values($view), array_values($slider->options->controllers)) : '');
+        (isset($slider->options->products) && empty($slider->options->products) == false ? array_push($view, 'product') : '');
 
         if (empty($view) == false) {
-            if (!in_array(Dispatcher::getInstance()->getController(), $view))
+            if (!in_array(Dispatcher::getInstance()->getController(), $view)) {
                 return;
-
-            if (Dispatcher::getInstance()->getController() == 'category')
-                if (in_array(Tools::getValue('id_category'), $slider->options->categories) == false)
-                    return;
-
+            }
+            if (Dispatcher::getInstance()->getController() == 'category' && in_array(Tools::getValue('id_category'), $slider->options->categories) == false) {
+                return;
+            }
+            if (Dispatcher::getInstance()->getController() == 'product' && !empty($slider->options->products) && (!Tools::getIsset('id_product') || !in_array(Tools::getValue('id_product'), $slider->options->products))) {
+                return;
+            }
             if (Dispatcher::getInstance()->getController() == 'cms') {
                 $categories = array();
                 $cms = array();
@@ -148,7 +158,7 @@ class FlexiSliders extends ObjectModel {
                 $image_temp = $slider->options->thumbnailWidth . '_' . $image;
             }
             $slides[$key]['image_helper']['thumb'] = ImageManager::thumbnail($source_path . $image, '/pager_' . $image_temp, $slider->options->thumbnailWidth);
-            $slides[$key]['image_helper']['dir'] = _MODULE_DIR_ . self::$definition['table'] . '/img/' . $id . '/';
+            $slides[$key]['image_helper']['dir'] = _MODULE_DIR_ . self::$definition['table'] . '/views/img/' . $id . '/';
             list($w, $h) = @getimagesize($source_path . $image);
             $slides[$key]['image_helper']['width'] = $w;
             $slides[$key]['image_helper']['height'] = $h;
@@ -159,10 +169,11 @@ class FlexiSliders extends ObjectModel {
             'slides' => $slides
         ));
         return Context::getContext()->smarty->fetch(
-                        dirname(__FILE__) . '/../views/templates/hook/slider.tpl');
+                dirname(__FILE__) . '/../views/templates/hook/slider.tpl');
     }
 
-    public function delete() {
+    public function delete()
+    {
         parent::delete();
 
         $this->cleanPositions();
@@ -177,7 +188,8 @@ class FlexiSliders extends ObjectModel {
     }
 
 // smarty
-    public static function get_slider($params) {
+    public static function get_slider($params)
+    {
         $id = '';
         if (isset($params['alias'])) {
             $alias = $params['alias'];
@@ -196,7 +208,8 @@ class FlexiSliders extends ObjectModel {
         return $result;
     }
 
-    public static function truefalse($truefalse, $assign = null) {
+    public static function truefalse($truefalse, $assign = null)
+    {
 
         if ($truefalse)
             $result = 'true';
@@ -210,7 +223,8 @@ class FlexiSliders extends ObjectModel {
         return $result;
     }
 
-    public static function duplicate() {
+    public static function duplicate()
+    {
         $slider = new FlexiSliders(Tools::getValue(self::$definition['primary']));
         if (!is_object($slider))
             return;
@@ -232,10 +246,10 @@ class FlexiSliders extends ObjectModel {
             copy($source . $slide->image, $dest . $slide->image);
         }
     }
-
     /* Get all CMS blocks */
 
-    public static function getAllCMSStructure($id_shop = false) {
+    public static function getAllCMSStructure($id_shop = false)
+    {
         $categories = self::getCMSCategories();
         $id_shop = ($id_shop !== false) ? $id_shop : Context::getContext()->shop->id;
         $all = array();
@@ -255,7 +269,8 @@ class FlexiSliders extends ObjectModel {
         return $all;
     }
 
-    public static function getCMSPages($id_cms_category, $id_shop = false) {
+    public static function getCMSPages($id_cms_category, $id_shop = false)
+    {
         $id_shop = ($id_shop !== false) ? $id_shop : Context::getContext()->shop->id;
 
         $sql = 'SELECT c.`id_cms`, cl.`meta_title`, cl.`link_rewrite`
@@ -273,7 +288,8 @@ class FlexiSliders extends ObjectModel {
         return Db::getInstance()->executeS($sql);
     }
 
-    public static function getCMSCategories($recursive = false, $parent = 0) {
+    public static function getCMSCategories($recursive = false, $parent = 0)
+    {
         if ($recursive === false) {
             $sql = 'SELECT bcp.`id_cms_category`, bcp.`id_parent`, bcp.`level_depth`, bcp.`active`, bcp.`position`, cl.`name`, cl.`link_rewrite`
 					FROM `' . _DB_PREFIX_ . 'cms_category` bcp
@@ -307,7 +323,8 @@ class FlexiSliders extends ObjectModel {
         }
     }
 
-    public function updatePosition($way, $position) {
+    public function updatePosition($way, $position)
+    {
         $sql = 'SELECT cp.`' . self::$definition['primary'] . '`, cp.`position` 
 			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '` cp 
                             WHERE cp.' . self::$definition['primary'] . ' = ' . (int) $this->id . ' 
@@ -331,7 +348,8 @@ class FlexiSliders extends ObjectModel {
         return false;
     }
 
-    public static function cleanPositions() {
+    public static function cleanPositions()
+    {
         $sql = 'SELECT `' . self::$definition['primary'] . '` 
 			FROM `' . _DB_PREFIX_ . self::$definition ['table'] . '` 
 			ORDER BY `position`';
@@ -345,13 +363,15 @@ class FlexiSliders extends ObjectModel {
         return true;
     }
 
-    public static function getLastPosition() {
+    public static function getLastPosition()
+    {
         $sql = 'SELECT MAX(position) 
 			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '`';
         return (Db::getInstance()->getValue($sql));
     }
 
-    private function transform_options() {
+    private function transform_options()
+    {
         if (!Tools::getIsset('submitUpdate' . self::$definition['table']) && !Tools::getIsset('submitAdd' . self::$definition['table']))
             return false;
         $parms = array();
@@ -360,21 +380,31 @@ class FlexiSliders extends ObjectModel {
         return Tools::jsonEncode($parms);
     }
 
-    public static function get_options(&$options) {
+    public static function get_options(&$options)
+    {
         if (!empty($options))
             $options = Tools::jsonDecode($options);
     }
 
-    public static function get_option_fields() {
+    public static function get_option_fields()
+    {
         return array('categories', 'cms', 'hooks', 'effect', 'keys', 'buttons', 'touch', 'pagination', 'startOnMouseOver', 'stopOnMouseOver', 'view', 'move',
-            'slicesx', 'slicesy', 'mode', 'direction', 'stripes', 'orientation', 'easing', 'speed', 'timer', 'height', 'width');
+            'slicesx', 'slicesy', 'mode', 'direction', 'stripes', 'orientation', 'easing', 'speed', 'timer', 'height', 'width',
+            'element', 'controllers', 'products', 'position', 'insert');
     }
 
-    public static function get_ads() {
+    public static function get_ads()
+    {
 //        return '<p style="text-align:center">'
 //                . '</p>';
     }
 
+    public static function getLiveEditToken()
+    {
+        return Tools::getAdminToken('flexislider' . (int) Tab::getIdFromClassName('flexislider')
+                . (is_object(Context::getContext()->employee) ? (int) Context::getContext()->employee->id :
+                    Tools::getValue('id_employee')));
+    }
 }
 
 ?>

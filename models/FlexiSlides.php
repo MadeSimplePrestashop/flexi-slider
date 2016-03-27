@@ -8,7 +8,8 @@
  * @license 	kuzmany.biz/prestashop
  * Reminder: You own a single production license. It would only be installed on one online store (or multistore)
  */
-class FlexiSlides extends ObjectModel {
+class FlexiSlides extends ObjectModel
+{
 
     public $id_flexislider_slides;
     public $id_flexislider;
@@ -21,13 +22,15 @@ class FlexiSlides extends ObjectModel {
     public $active;
     private static $parent_definition;
 
-    public function __construct($id = null, $id_lang = null, $id_shop = null) {
+    public function __construct($id = null, $id_lang = null, $id_shop = null)
+    {
         self::$parent_definition = FlexiSliders::$definition; // prevent php 5.3 bug
         self::_init();
         parent::__construct($id, $id_lang, $id_shop);
     }
 
-    private static function _init() {
+    private static function _init()
+    {
         if (Shop::isFeatureActive())
             Shop::addTableAssociation(self::$definition['table'], array('type' => 'shop'));
     }
@@ -51,7 +54,8 @@ class FlexiSlides extends ObjectModel {
         )
     );
 
-    public static function getAll($parms = array()) {
+    public static function getAll($parms = array())
+    {
         self::_init();
         $sql = new DbQuery();
         $sql->select('*');
@@ -66,7 +70,8 @@ class FlexiSlides extends ObjectModel {
         return Db::getInstance()->executeS($sql);
     }
 
-    public function update($null_values = false) {
+    public function update($null_values = false)
+    {
         $this->handle_image();
         $options = $this->transform_options();
         if ($options != false)
@@ -87,7 +92,8 @@ class FlexiSlides extends ObjectModel {
         }
     }
 
-    public function add($autodate = true, $null_values = false) {
+    public function add($autodate = true, $null_values = false)
+    {
         $par = self::$parent_definition['primary'];
         $last_position = self::getLastPosition($this->$par);
         $this->position = $last_position + 1;
@@ -96,8 +102,8 @@ class FlexiSlides extends ObjectModel {
         if ($options != false)
             $this->options = $options;
         parent::add($autodate, $null_values);
-        
-         //set settings for all sldies
+
+        //set settings for all sldies
         if (Tools::getValue('setall_on')) {
             $par = self::$parent_definition['primary'];
             $all = self::getAll(array($par => $this->$par));
@@ -110,7 +116,8 @@ class FlexiSlides extends ObjectModel {
         }
     }
 
-    public function delete() {
+    public function delete()
+    {
         parent::delete();
         $par = self::$parent_definition['primary'];
         $this->cleanPositions($this->$par);
@@ -124,7 +131,8 @@ class FlexiSlides extends ObjectModel {
             @unlink(self::get_image_path($this->$par) . $this->image);
     }
 
-    public function updatePosition($way, $position) {
+    public function updatePosition($way, $position)
+    {
         $sql = 'SELECT cp.`' . self::$definition['primary'] . '`, cp.`position`, cp.`' . self::$parent_definition['primary'] . '` 
 			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '` cp 
 			WHERE cp.`' . self::$parent_definition['primary'] . '` = ' . (int) $this->id_flexislider . ' AND cp.' . self::$definition['primary'] . ' = ' . (int) $this->id . ' 
@@ -151,7 +159,8 @@ class FlexiSlides extends ObjectModel {
         return false;
     }
 
-    public static function cleanPositions($ident) {
+    public static function cleanPositions($ident)
+    {
         $sql = 'SELECT `' . self::$definition['primary'] . '` 
 			FROM `' . _DB_PREFIX_ . self::$definition ['table'] . '` 
 			WHERE `' . self::$parent_definition['primary'] . '` = ' . (int) $ident . ' 
@@ -168,21 +177,24 @@ class FlexiSlides extends ObjectModel {
         return true;
     }
 
-    public static function getLastPosition($ident) {
+    public static function getLastPosition($ident)
+    {
         $sql = 'SELECT MAX(position) 
 			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '`
 			WHERE `' . self::$parent_definition['primary'] . '` = ' . (int) $ident;
         return (Db::getInstance()->getValue($sql));
     }
 
-    public static function get_image_path($id_dir = null) {
+    public static function get_image_path($id_dir = null)
+    {
         if ($id_dir == null)
-            return dirname(__FILE__) . '/../img/';
+            return dirname(__FILE__) . '/../views/img/';
         else
-            return dirname(__FILE__) . '/../img/' . $id_dir . '/';
+            return dirname(__FILE__) . '/../views/img/' . $id_dir . '/';
     }
 
-    public function handle_image() {
+    public function handle_image()
+    {
         if (isset($_FILES['image']) && isset($_FILES['image']['tmp_name']) && !empty($_FILES['image']['tmp_name'])) {
             //dir 
             $dir = self::get_image_path(Tools::getValue(self::$parent_definition['primary']));
@@ -206,7 +218,8 @@ class FlexiSlides extends ObjectModel {
         }
     }
 
-    private function transform_options() {
+    private function transform_options()
+    {
         if (!Tools::getIsset('submitUpdate' . self::$definition['table']) && !Tools::getIsset('submitAdd' . self::$definition['table']))
             return false;
         $parms = array();
@@ -215,7 +228,8 @@ class FlexiSlides extends ObjectModel {
         return Tools::jsonEncode($parms);
     }
 
-    private function transform_caption_options($options) {
+    private function transform_caption_options($options)
+    {
         if (!Tools::getIsset('submitUpdate' . self::$definition['table']) && !Tools::getIsset('submitAdd' . self::$definition['table']))
             return false;
         $parms = Tools::jsonDecode($options, true);
@@ -224,17 +238,20 @@ class FlexiSlides extends ObjectModel {
         return Tools::jsonEncode($parms);
     }
 
-    public static function get_option_fields() {
+    public static function get_option_fields()
+    {
         return array('captionPadding', 'backgroundColor', 'imagePosition', 'size', 'displayCaption', 'captionPosition', 'captionBackgroundColor', 'captionFontColor', 'captionOpacity');
         //return array('position', 'size', 'width', 'backgroundColor', 'backgroundOpacity', 'borderColor', 'borderWidth', 'borderStyle', 'color');
     }
 
-    public static function get_caption_fields() {
+    public static function get_caption_fields()
+    {
         return array('captionPadding', 'captionPosition', 'captionBackgroundColor', 'captionFontColor', 'captionOpacity');
         //return array('position', 'size', 'width', 'backgroundColor', 'backgroundOpacity', 'borderColor', 'borderWidth', 'borderStyle', 'color');
     }
 
-    public static function duplicate() {
+    public static function duplicate()
+    {
         $context = Context::getContext();
         $slide = new FlexiSlides(Tools::getValue(self::$definition['primary']));
         if (!is_object($slide))
@@ -244,7 +261,6 @@ class FlexiSlides extends ObjectModel {
         $par = FlexiSliders::$definition['primary'];
         Tools::redirectAdmin($context->link->getAdminLink('AdminFlexiSlides') . '&' . $par . '=' . $slide->$par);
     }
-
 }
 
 ?>

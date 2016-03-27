@@ -2,7 +2,7 @@
 <module>
 	<name>flexislider</name>
 	<displayName><![CDATA[Flexi Slider]]></displayName>
-	<version><![CDATA[1.0]]></version>
+	<version><![CDATA[1.0.0]]></version>
 	<description><![CDATA[Responsible and mobile friendly slider with many options and few cute effects.]]></description>
 	<author><![CDATA[kuzmany.biz/prestashop]]></author>
 	<tab><![CDATA[front_office_features]]></tab>

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Module Flexi Slider 
  * 
@@ -14,16 +13,16 @@ if (!defined('_PS_VERSION_'))
 require_once(dirname(__FILE__) . '/models/FlexiSliders.php');
 require_once(dirname(__FILE__) . '/models/FlexiSlides.php');
 
-class flexislider extends Module {
+class flexislider extends Module
+{
 
-    public $hooks = array('displayTop', 'displayHome', 'displayLeftColumn', 'displayLeftColumnProduct',
-        'displayRightColumn', 'displayRightColumnProduct', 'displayFooter', 'displayFooterProduct',
-        'displayTopColumn', 'displayHomeTabContent', 'displayProductTab', 'displayShoppingCartFooter', 'displayBanner');
+    public $hooks = array('displayFooter');
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->name = 'flexislider';
         $this->tab = 'front_office_features';
-        $this->version = '1.0';
+        $this->version = '1.0.0';
         $this->author = 'kuzmany.biz/prestashop';
         $this->need_instance = 0;
         $this->module_key = 'cf572794bcfde7a20f5146cd06959ad9';
@@ -34,7 +33,8 @@ class flexislider extends Module {
         $this->description = $this->l('Responsible and mobile friendly slider with many options and few cute effects.');
     }
 
-    public function install() {
+    public function install()
+    {
 
         if (!parent::install() || !$this->registerHook('displayHeader') || !$this->registerHook('displayBackOfficeHeader'))
             return false;
@@ -62,7 +62,8 @@ class flexislider extends Module {
         return true;
     }
 
-    public function uninstall() {
+    public function uninstall()
+    {
         if (!parent::uninstall() || !$this->unregisterHook('displayHeader') || !$this->unregisterHook('displayBackOfficeHeader')
         )
             return false;
@@ -78,11 +79,13 @@ class flexislider extends Module {
         return true;
     }
 
-    public function getContent() {
+    public function getContent()
+    {
         Tools::redirectAdmin('index.php?controller=AdminFlexiSliders&token=' . Tools::getAdminTokenLite('AdminFlexiSliders'));
     }
 
-    private function installAdminTab($name, $className, $parent) {
+    private function installAdminTab($name, $className, $parent)
+    {
         $tab = new Tab();
         $tab->name = $name;
         $tab->class_name = $className;
@@ -92,120 +95,70 @@ class flexislider extends Module {
         return $tab;
     }
 
-    private function uninstallAdminTab($className) {
+    private function uninstallAdminTab($className)
+    {
         $tab = new Tab((int) Tab::getIdFromClassName($className));
         $tab->delete();
     }
 
-    public function hookDisplayBackOfficeHeader($params) {
-        if (Dispatcher::getInstance()->getController() == 'AdminFlexiSliders')
-            $this->hookHeader($params);
+    public function hookDisplayBackOfficeHeader($params)
+    {
+        if (in_array(Dispatcher::getInstance()->getController(), array('AdminFlexiSliders', 'AdminFlexiSlides'))) {
+            $this->context->controller->addJS($this->_path . '/views/js/admin.js');
+            $this->context->controller->addCSS($this->_path . '/views/css/admin.css');
+        }
     }
 
-    public function hookHeader($params) {
-        $this->context->controller->addCSS($this->getPathUri() . 'css/flexslider.css');
-        $this->context->controller->addJS($this->getPathUri() . 'js/moodular.js');
-        if (!isset($this->context->smarty->registered_plugins['function'][$this->name]))
+    public function hookHeader($params)
+    {
+        $this->context->controller->addCSS($this->getPathUri() . 'views/css/flexslider.css');
+        $this->context->controller->addJS($this->getPathUri() . 'views/js/moodular.js');
+        if (!isset($this->context->smarty->registered_plugins['function'][$this->name])) {
             $this->context->smarty->registerPlugin('function', $this->name, array('FlexiSliders', 'get_slider'));
-        if (!isset($this->context->smarty->registered_plugins['modifier']['truefalse']))
+        }
+        if (!isset($this->context->smarty->registered_plugins['modifier']['truefalse'])) {
             $this->context->smarty->registerPlugin('modifier', 'truefalse', array('FlexiSliders', 'truefalse'));
+        }
+
+        if ($this->is_inspector()) {
+            $this->context->controller->addJS($this->_path . '/views/js/inspector.js');
+            $this->context->controller->addCSS($this->_path . '/views/css/inspector.css');
+        }
     }
 
-    /**
-     * Function with cache mechanism, prevent to many sql request
-     * @param type $hook
-     * @return type
-     */
-    private function find_ids_from_hooks($hook) {
+    private function is_inspector()
+    {
+        return Tools::getValue('fs_live_edit_token') && Tools::getValue('fs_live_edit_token') == FlexiSliders::getLiveEditToken() && Tools::getIsset('id_employee') ? true : false;
+    }
+
+    private function load_sliders()
+    {
         $sliders = Cache::retrieve(__CLASS__ . __FUNCTION__);
-        if ($sliders == -1)
-            return array();
         if (!$sliders) {
             $sliders = FlexiSliders::getAll();
-            if ($sliders)
+            if ($sliders) {
                 Cache::store(__CLASS__ . __FUNCTION__, $sliders);
-            else
+            } else {
                 Cache::store(__CLASS__ . __FUNCTION__, -1);
+            }
         }
-
-        $ids = array();
-        foreach ($sliders as $slider) {
-            $options = Tools::jsonDecode($slider['options']);
-            if (!isset($options->hooks) || !is_array($options->hooks) || !in_array($hook, $options->hooks))
-                continue;
-            $ids[] = $slider[FlexiSliders::$definition['primary']];
-        }
-
-        return $ids;
-    }
-
-    /**
-     * Universal function for loading sliders in hook
-     * @param type $hook_func
-     * @return type
-     */
-    private function load_hook_sliders($hook_func) {
-        $hook = lcfirst(str_replace('hook', '', $hook_func));
-        $ids = $this->find_ids_from_hooks($hook);
-        if (!$ids)
+        if ($sliders == -1) {
             return;
+        }
         $html = '';
-        foreach ($ids as $slider)
-            $html .= FlexiSliders::get_slider(array('id' => $slider));
+        foreach ($sliders as $slider) {
+            $html .= FlexiSliders::get_slider(array('id' => $slider[FlexiSliders::$definition['primary']]));
+        }
 
         return $html;
     }
 
-    // hooks
-    public function hookDisplayTop($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayHome($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayLeftColumn($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayLeftColumnProduct($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayRightColumn($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayRightColumnProduct($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayFooter($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayFooterProduct($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayTopColumn($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayHomeTabContent($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayProductTab($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayShoppingCartFooter($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
-    }
-
-    public function hookDisplayBanner($params) {
-        return $this->load_hook_sliders(__FUNCTION__);
+    public function hookDisplayFooter($params)
+    {
+        $html = '';
+        if ($this->is_inspector()) {
+            $html = $this->display(__FILE__, 'views/templates/hook/inspector.tpl');
+        }
+        return $html . $this->load_sliders();
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Module Flexi Slider
  * 
@@ -10,11 +9,13 @@
  */
 require_once(_PS_MODULE_DIR_ . 'flexislider/models/FlexiSliders.php');
 
-class AdminFlexiSlidersController extends ModuleAdminController {
+class AdminFlexiSlidersController extends ModuleAdminController
+{
 
     protected $position_identifier = 'id_flexislider';
 
-    public function __construct() {
+    public function __construct()
+    {
 
         $this->bootstrap = true;
         $this->show_toolbar = true;
@@ -34,7 +35,8 @@ class AdminFlexiSlidersController extends ModuleAdminController {
         parent::__construct();
     }
 
-    public function initContent() {
+    public function initContent()
+    {
 
         if (Tools::getIsset('duplicate' . $this->table))
             FlexiSliders::duplicate();
@@ -46,7 +48,8 @@ class AdminFlexiSlidersController extends ModuleAdminController {
         parent::initContent();
     }
 
-    public function postProcess() {
+    public function postProcess()
+    {
         parent::postProcess();
         if (Tools::getIsset('delete' . $this->table))
             Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminFlexiSliders'));
@@ -59,7 +62,8 @@ class AdminFlexiSlidersController extends ModuleAdminController {
                 Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminFlexiSliders'));
     }
 
-    public function renderForm() {
+    public function renderForm()
+    {
 
         $obj = $this->loadObject(true);
         if (!$obj)
@@ -79,8 +83,9 @@ class AdminFlexiSlidersController extends ModuleAdminController {
         }
 
         $selected_categories = array();
-        if (isset($options->categories) && empty($options->categories) == false)
+        if (isset($options->categories) && empty($options->categories) == false) {
             $selected_categories = $options->categories;
+        }
 
         $root_category = Category::getRootCategory();
         $root_category = array('id_category' => $root_category->id, 'name' => $root_category->name);
@@ -477,24 +482,82 @@ class AdminFlexiSlidersController extends ModuleAdminController {
                 'name' => 'submit',
             )
         );
-        $query = array();
-        foreach ($this->module->hooks as $hook)
-            $query[]['name'] = $hook;
+
+        $positions = array();
+        $href = $this->context->shop->getBaseUrl() . '?fs_live_edit_token=' . FlexiSliders::getLiveEditToken() . '&id_employee=' . $this->context->employee->id;
+        $positions[] = '<div class="col-sm-4">';
+        $positions[] = '<a onclick="if(!confirm(\'' . $this->l('Web page will be opened in new window in mode for select website position. Do you want continue?') . '\')) return false"  target="_blank" href="' . $href . '" id="select_position"><button   type="button" class="btn btn-default" >' . $this->l('select element from website') . '</button></a>';
+        $positions[] = '</div>';
+        $this->fields_value['position'] = implode('', $positions);
         $this->fields_form['input'][] = array(
             'tab' => 'display',
+            'type' => 'free',
+            'name' => 'position',
+            'label' => $this->l('Website position picker')
+        );
+        $this->fields_value['element'] = '<input value="' . $options->element . '" name="element" id="element" type="text">';
+        $this->fields_form['input'][] = array(
+            'class' => 'element',
+            'tab' => 'display',
+            'type' => 'free',
+            'name' => 'element',
+            'desc' => $this->l('If leave empty, slider will not displayed'),
+            'label' => $this->l('Selected element'),
+        );
+
+        $this->fields_form['input'][] = array(
+            'tab' => 'display',
+            'type' => 'radio',
+            'label' => $this->l('Insert slider'),
+            'name' => 'insert',
+            'values' => array(
+                array(
+                    'value' => 'after',
+                    'label' => $this->l('After selected element')
+                ),
+                array(
+                    'value' => 'before',
+                    'label' => $this->l('Before selected element')
+                ),
+                array(
+                    'value' => 'prepend',
+                    'label' => $this->l('Prepend to selected element')
+                ),
+                array(
+                    'value' => 'append',
+                    'label' => $this->l('Append to selected element')
+                )
+            ),
+            'default_value' => $options->insert
+        );
+        $this->fields_form['input'][] = array(
             'type' => 'select',
+            'label' => $this->l('Display on controllers'),
+            'name' => 'controllers[]',
+            'class' => 'chosen element',
             'multiple' => true,
-            'size' => 7,
-            'label' => $this->l('Hooks'),
-            'name' => 'hooks[]',
-            'hint' => $this->l('It\'s optional. Choose a display position. More about hooks in documentation.'),
-            'desc' => $this->l('CTRL+click for select/unselect more options'),
             'options' => array(
-                'query' => $query,
+                'query' => $this->getControllers(),
                 'id' => 'name',
                 'name' => 'name'
-            )
-            , 'default_value' => isset($options->hooks) ? $options->hooks : array()
+            ),
+            'tab' => 'display',
+            'default_value' => $options->controllers
+        );
+
+        $this->fields_form['input'][] = array(
+            'type' => 'select',
+            'label' => $this->l('Display on products page'),
+            'name' => 'products[]',
+            'class' => 'chosen element',
+            'multiple' => true,
+            'options' => array(
+                'query' => Product::getProducts((int) Context::getContext()->language->id, 0, 1000, 'p.id_product', 'asc', false, true),
+                'id' => 'id_product',
+                'name' => 'name'
+            ),
+            'tab' => 'display',
+            'default_value' => $options->products
         );
 
         $this->fields_form['input'][] = array(
@@ -503,7 +566,6 @@ class AdminFlexiSlidersController extends ModuleAdminController {
             'label' => $this->l('Categories'),
             'name' => 'categories',
             'desc' => $this->l('Empty is disabled.'),
-            'hint' => $this->l('Empty is disabled.'),
             'tree' => array(
                 'use_search' => false,
                 'id' => 'categoryBox',
@@ -621,7 +683,8 @@ class AdminFlexiSlidersController extends ModuleAdminController {
         return parent::renderForm();
     }
 
-    public function renderList() {
+    public function renderList()
+    {
         $this->fields_list = array(
             'id_flexislider' => array(
                 'title' => $this->l('ID'),
@@ -672,7 +735,8 @@ class AdminFlexiSlidersController extends ModuleAdminController {
     }
 
 //render image at renderList
-    public function getSlides($echo, $row) {
+    public function getSlides($echo, $row)
+    {
         $parms = array($echo);
         array_shift($parms);
         $parms[FlexiSliders::$definition['primary']] = $row[FlexiSliders::$definition['primary']];
@@ -680,11 +744,13 @@ class AdminFlexiSlidersController extends ModuleAdminController {
         return count($slides);
     }
 
-    public function getTag($echo) {
+    public function getTag($echo)
+    {
         return '{flexislider alias=\'' . $echo . '\'}';
     }
 
-    public function ajaxProcessUpdatePositions() {
+    public function ajaxProcessUpdatePositions()
+    {
         if ($this->tabAccess['edit'] === '1') {
             $id_to_move = (int) Tools::getValue('id');
             $way = (int) Tools::getValue('way');
@@ -710,4 +776,34 @@ class AdminFlexiSlidersController extends ModuleAdminController {
         }
     }
 
+    private function getControllers()
+    {
+        $cache_id = __CLASS__ . __FUNCTION__ . '11';
+
+        if (Cache::getInstance()->exists($cache_id)) {
+            $controllers_array = Cache::getInstance()->get($cache_id);
+        } else {
+
+            // @todo do something better with controllers
+            $controllers = Dispatcher::getControllers(_PS_FRONT_CONTROLLER_DIR_);
+            ksort($controllers);
+            foreach (array_keys($controllers) as $k) {
+                $controllers_array[]['name'] = $k;
+            }
+
+            $modules_controllers_type = array('front' => $this->l('Front modules controller'));
+            foreach (array_keys($modules_controllers_type) as $type) {
+                $all_modules_controllers = Dispatcher::getModuleControllers($type);
+                foreach ($all_modules_controllers as $module => $modules_controllers) {
+                    foreach ($modules_controllers as $cont) {
+                        $controllers_array[]['name'] = 'module-' . $module . '-' . $cont;
+                    }
+                }
+            }
+
+            $timeout = 3600 * 24;
+            Cache::getInstance()->set($cache_id, $controllers_array, $timeout);
+        }
+        return $controllers_array;
+    }
 }

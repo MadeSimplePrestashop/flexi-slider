@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Module Flexi Slider
  * 
@@ -11,12 +10,14 @@
 require_once(_PS_MODULE_DIR_ . 'flexislider/models/FlexiSliders.php');
 require_once(_PS_MODULE_DIR_ . 'flexislider/models/FlexiSlides.php');
 
-class AdminFlexiSlidesController extends ModuleAdminController {
+class AdminFlexiSlidesController extends ModuleAdminController
+{
 
     protected $position_identifier = 'id_flexislider_slides';
     protected static $parent_definition;
 
-    public function __construct() {
+    public function __construct()
+    {
 
         self::$parent_definition = FlexiSliders::$definition;
 
@@ -40,17 +41,20 @@ class AdminFlexiSlidesController extends ModuleAdminController {
         parent::__construct();
     }
 
-    private function get_image_path($id_dir) {
-        return _PS_MODULE_DIR_ . $this->module->name . '/img/' . $id_dir . '/';
+    private function get_image_path($id_dir)
+    {
+        return _PS_MODULE_DIR_ . $this->module->name . '/views/img/' . $id_dir . '/';
     }
 
-    public function initContent() {
+    public function initContent()
+    {
         if (Tools::getIsset('duplicate' . $this->table))
             FlexiSlides::duplicate();
         parent::initContent();
     }
 
-    public function postProcess() {
+    public function postProcess()
+    {
         $obj = $this->loadObject(true);
 //reload object is bulk action
         if (Tools::getIsset('submitFilter' . $this->table) && Tools::getValue('submitFilter' . $this->table) == 0) {
@@ -71,13 +75,14 @@ class AdminFlexiSlidesController extends ModuleAdminController {
             Tools::redirectAdmin($this->context->link->getAdminLink('AdminFlexiSlides') . '&' . self::$parent_definition['primary'] . '=' . Tools::getValue(self::$parent_definition['primary']));
     }
 
-    public function renderForm() {
+    public function renderForm()
+    {
 
         if (!$obj = $this->loadObject(true))
             return;
         if ($obj->image) {
             $par = self::$parent_definition['primary'];
-            $dir = _PS_MODULE_DIR_ . $this->module->name . '/img/' . $obj->$par . '/';
+            $dir = _PS_MODULE_DIR_ . $this->module->name . '/views/img/' . $obj->$par . '/';
             $image = $dir . $obj->image;
         } else
             $image = '';
@@ -348,7 +353,7 @@ class AdminFlexiSlidesController extends ModuleAdminController {
                     'name' => 'setall',
                     'values' => array(
                         'query' => array(
-                            array('id' => 'on', 'name' => $this->l('Set this caption settings for all slides'), 'val' => '1'),
+                            array('id' => 'on', 'name' => $this->l('Set this caption settings for all slides in slider'), 'val' => '1'),
                         ),
                         'id' => 'id',
                         'name' => 'name'
@@ -374,7 +379,7 @@ class AdminFlexiSlidesController extends ModuleAdminController {
 //back button
         $this->content.=
 
-                '<script>
+            '<script>
          $(document).ready(function(){
             $(\'.panel-footer a\').click(function(e){e.preventDefault(); window.history.back();})
         })
@@ -383,7 +388,8 @@ class AdminFlexiSlidesController extends ModuleAdminController {
         return parent::renderForm();
     }
 
-    public function renderList() {
+    public function renderList()
+    {
 
         if (!Tools::getValue(self::$parent_definition['primary'])) {
             $this->page_header_toolbar_btn['save'] = array(
@@ -458,12 +464,13 @@ class AdminFlexiSlidesController extends ModuleAdminController {
 // set new title
         $slider = new FlexiSliders(Tools::getValue(self::$parent_definition ['primary']));
         $this->tpl_list_vars['title'] = '<a href="' . $this->context->link->getAdminLink('AdminFlexiSliders', true) . '">' . $this->l('All sliders') . '</a> &nbsp;&gt;&nbsp; ' .
-                '<a href="' . $this->context->link->getAdminLink('AdminFlexiSliders', true) . '&update' . self::$parent_definition['table'] . '&' . self::$parent_definition['primary'] . '=' . Tools::getValue(self::$parent_definition['primary']) . '">' . $slider->alias . '</a> &nbsp;&gt;&nbsp;	 ' .
-                $this->l('Manage slides');
+            '<a href="' . $this->context->link->getAdminLink('AdminFlexiSliders', true) . '&update' . self::$parent_definition['table'] . '&' . self::$parent_definition['primary'] . '=' . Tools::getValue(self::$parent_definition['primary']) . '">' . $slider->alias . '</a> &nbsp;&gt;&nbsp;	 ' .
+            $this->l('Manage slides');
         return parent::renderList();
     }
 
-    public function ajaxProcessUpdatePositions() {
+    public function ajaxProcessUpdatePositions()
+    {
         if ($this->tabAccess['edit'] === '1') {
             $id_to_move = (int) Tools::getValue('id');
             $way = (int) Tools::getValue('way');
@@ -482,22 +489,21 @@ class AdminFlexiSlidesController extends ModuleAdminController {
             if (Validate::isLoadedObject($object)) {
 
                 if (isset($position) && $object->updatePosition(
-                                $way, $position))
+                        $way, $position))
                     die(true);
                 else
                     die(
-                            '{"hasError" : true, "errors" : "Can not update categories position"}' . $position);
+                        '{"hasError" : true, "errors" : "Can not update categories position"}' . $position);
             } else
                 die(
-                        '{"hasError" : true, "errors" : "This category can not be loaded"}');
+                    '{"hasError" : true, "errors" : "This category can not be loaded"}');
         }
     }
 
 //render image at renderList
-    public function
-    getImage($echo, $row) {
+    public function getImage($echo, $row)
+    {
         if (isset($row['image']) && $row['image'])
             return ImageManager ::thumbnail($this->get_image_path($row[self::$parent_definition['primary']]) . $echo, 'thumb_' . $echo, 50);
     }
-
 }
