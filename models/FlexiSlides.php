@@ -86,7 +86,7 @@ class FlexiSlides extends ObjectModel
             foreach ($all as $a)
                 if ($a[self::$definition['primary']] != $this->id) {
                     $tmpobj = new FlexiSlides($a[self::$definition['primary']]);
-                    $tmpobj->options = $tmpobj->transform_caption_options($tmpobj->options);
+                    $tmpobj->options = $tmpobj->transform_options($tmpobj->options);
                     $tmpobj->save();
                 }
         }
@@ -110,7 +110,7 @@ class FlexiSlides extends ObjectModel
             foreach ($all as $a)
                 if ($a[self::$definition['primary']] != $this->id) {
                     $tmpobj = new FlexiSlides($a[self::$definition['primary']]);
-                    $tmpobj->options = $tmpobj->transform_caption_options($tmpobj->options);
+                    $tmpobj->options = $tmpobj->transform_options($tmpobj->options);
                     $tmpobj->save();
                 }
         }
@@ -228,25 +228,9 @@ class FlexiSlides extends ObjectModel
         return Tools::jsonEncode($parms);
     }
 
-    private function transform_caption_options($options)
-    {
-        if (!Tools::getIsset('submitUpdate' . self::$definition['table']) && !Tools::getIsset('submitAdd' . self::$definition['table']))
-            return false;
-        $parms = Tools::jsonDecode($options, true);
-        foreach (self::get_caption_fields() as $option)
-            $parms[$option] = Tools::getValue($option);
-        return Tools::jsonEncode($parms);
-    }
-
     public static function get_option_fields()
     {
-        return array('captionPadding', 'backgroundColor', 'imagePosition', 'size', 'displayCaption', 'captionPosition', 'captionBackgroundColor', 'captionFontColor', 'captionOpacity');
-        //return array('position', 'size', 'width', 'backgroundColor', 'backgroundOpacity', 'borderColor', 'borderWidth', 'borderStyle', 'color');
-    }
-
-    public static function get_caption_fields()
-    {
-        return array('captionPadding', 'captionPosition', 'captionBackgroundColor', 'captionFontColor', 'captionOpacity', 'css');
+        return array('captionPadding', 'backgroundColor', 'imagePosition', 'size', 'displayCaption', 'captionPosition', 'captionBackgroundColor', 'captionFontColor', 'captionOpacity', 'css');
         //return array('position', 'size', 'width', 'backgroundColor', 'backgroundOpacity', 'borderColor', 'borderWidth', 'borderStyle', 'color');
     }
 

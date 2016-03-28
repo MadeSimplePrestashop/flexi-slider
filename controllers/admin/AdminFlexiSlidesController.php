@@ -424,7 +424,7 @@ $("#' . $this->table . '_form button:submit").click();
             $this->page_header_toolbar_btn['save'] = array(
                 'href' => $this->context->link->getAdminLink('AdminFlexiSlides', true),
                 'icon' => 'process-icon-cancel',
-                'desc' => $this->l('Back to sliders list'),
+                'desc' => $this->l('Back to sliders'),
             );
             $this->errors[] = Tools::displayError('Can\'t identify slider. Please <a href="' . $this->context->link->getAdminLink('AdminFlexiSliders', true) . '">go back</a> to sliders.', false);
             return parent::renderList();

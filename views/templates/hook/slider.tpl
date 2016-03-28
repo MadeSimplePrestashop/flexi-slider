@@ -53,7 +53,7 @@
                     <li>
                         <div class="case" style="{$slide.options->size|escape:'html':'UTF-8'}{$slide.options->imagePosition|escape:'html':'UTF-8'}background-image: url('{$link->getMediaLink($slide.image_helper.dir|cat:$slide.image)|escape:'htmlall':'UTF-8'}'); {if $slide.options->backgroundColor}background-color:{$slide.options->backgroundColor|escape:'html':'UTF-8'}{/if}">
                             {if $slide.url}<a href="{$slide.url|escape:'html':'UTF-8'}" {if $slide.target}target="{$slide.target|escape:'html':'UTF-8'}"{/if}>{/if}
-                                {if $slide.caption}<div style="{$slide.options->displayCaption|escape:'html':'UTF-8'}{$slide.options->captionPosition|escape:'html':'UTF-8'} color:{$slide.options->captionFontColor|escape:'html':'UTF-8'}; {$slider->options->css|escape:'htmlall':'UTF-8'}" class="caption">
+                                {if $slide.caption}<div style="{$slide.options->displayCaption|escape:'html':'UTF-8'}{$slide.options->captionPosition|escape:'html':'UTF-8'} color:{$slide.options->captionFontColor|escape:'html':'UTF-8'}; {$slide.options->css|escape:'htmlall':'UTF-8'}" class="caption">
                                         <div  class="blayer" style="opacity:{$slide.options->captionOpacity|escape:'html':'UTF-8'};{if $slide.options->captionBackgroundColor|default}background-color:{$slide.options->captionBackgroundColor|escape:'html':'UTF-8'};{/if}"></div>
                                         <div style="{if $slide.options->captionPadding}padding:{$slide.options->captionPadding|escape:'html':'UTF-8'};{/if}" class="caption-case">{html_entity_decode($slide.caption|escape:'html':'UTF-8')}</div>
                                     </div>{/if}

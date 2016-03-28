@@ -25,7 +25,7 @@ class flexislider extends Module
         $this->version = '1.0.0';
         $this->author = 'kuzmany.biz/prestashop';
         $this->need_instance = 0;
-        $this->module_key = 'cf572794bcfde7a20f5146cd06959ad9';
+        $this->module_key = 'b7165ebb44418e5cdc0d99e1079914a7';
 
         parent::__construct();
 
