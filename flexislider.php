@@ -142,7 +142,7 @@ class flexislider extends Module
     {
         $sliders = Cache::retrieve(__CLASS__ . __FUNCTION__);
         if (!$sliders) {
-            $sliders = FlexiSliders::getAll();
+            $sliders = FlexiSliders::getAll(array('c.active' => 1));
             if ($sliders) {
                 Cache::store(__CLASS__ . __FUNCTION__, $sliders);
             } else {
@@ -154,7 +154,10 @@ class flexislider extends Module
         }
         $html = '';
         foreach ($sliders as $slider) {
-            $html .= FlexiSliders::get_slider(array('id' => $slider[FlexiSliders::$definition['primary']]));
+            $options = Tools::jsonDecode($slider['options']);
+            if (isset($options->element) && !empty($options->element)) {
+                $html .= FlexiSliders::get_slider(array('id' => $slider[FlexiSliders::$definition['primary']]));
+            }
         }
 
         return $html;

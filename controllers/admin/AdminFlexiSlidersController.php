@@ -71,10 +71,11 @@ class AdminFlexiSlidersController extends ModuleAdminController
 
         $par = FlexiSliders::$definition['primary'];
 
-        if (is_object($obj))
+        if (is_object($obj)) {
             $options = Tools::jsonDecode($obj->options);
-        else
+        } else {
             $options = '';
+        }
 
         $easing = array("linear", "swing", "easeInQuad", "easeOutQuad", "easeInOutQuad", "easeInCubic", "easeOutCubic", "easeInOutCubic", "easeInQuart", "easeOutQuart", "easeInOutQuart", "easeInQuint", "easeOutQuint", "easeInOutQuint", "easeInSine", "easeOutSine", "easeInOutSine", "easeInExpo", "easeOutExpo", "easeInOutExpo", "easeInCirc", "easeOutCirc", "easeInOutCirc", "easeInElastic", "easeOutElastic", "easeInOutElastic", "easeInBack", "easeOutBack", "easeInOutBack", "easeInBounce", "easeOutBounce", "easeInOutBounce");
         foreach ($easing as $key => $easin) {
